@@ -1,5 +1,7 @@
-import math
 import copy
+import math
+
+from vector import Vector
 
 
 class Matrix:
@@ -252,6 +254,27 @@ class Matrix:
         else:
             raise ValueError("Rhs must be a Matrix or a scalar.")
 
+    def __sub__(self, rhs):
+        if isinstance(rhs, Matrix):
+            if self.shape() == rhs.shape():
+                new_data = [0] * self.n_elements
+                for i, _ in enumerate(self.data):
+                    new_data[i] = self.data[i] - rhs.data[i]
+                return Matrix(self.n_rows, self.n_cols, new_data)
+            else:
+                raise (
+                    ValueError(
+                        f"The shape lhs is {self.shape()} but the shape of the rhs is {rhs.shape()}."
+                    )
+                )
+        elif isinstance(rhs, (int, float)):
+            new_data = [0] * self.n_elements
+            for i, _ in enumerate(self.data):
+                new_data[i] = self.data[i] - rhs
+            return Matrix(self.n_rows, self.n_cols, new_data)
+        else:
+            raise ValueError("Rhs must be a Matrix or a scalar.")
+
     def __mul__(self, rhs):
         if isinstance(rhs, Matrix):
             if self.n_cols == rhs.n_rows:
@@ -272,12 +295,14 @@ class Matrix:
                     )
                 )
         elif isinstance(rhs, (int, float)):
-            new_data = [0] * self.n_elements
-            for i, _ in enumerate(self.data):
-                new_data[i] = self.data[i] * rhs
-            return Matrix(self.n_rows, self.n_cols, new_data)
+            return Matrix(self.n_rows, self.n_cols, [x * rhs for x in self.data])
+        elif isinstance(rhs, Vector):
+            if rhs.dim != self.n_cols:
+                raise ValueError("Vector and Matrix dimensions are incompatible")
+            col_matrix = self * Matrix(rhs.dim, 1, rhs.data)
+            return Vector(col_matrix.data)
         else:
-            raise ValueError("Rhs must be a Matrix or a scalar.")
+            raise ValueError("Rhs must be a Matrix or a Vector or a scalar.")
 
     def __eq__(self, rhs) -> bool:
         if (not isinstance(rhs, Matrix)) or (self.shape() != rhs.shape()):
