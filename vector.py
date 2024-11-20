@@ -1,3 +1,6 @@
+import math
+
+
 class Vector:
     def __init__(self, data=[0.0]) -> None:
         self.data = data
@@ -44,5 +47,15 @@ class Vector:
             )
         return sum((self * rhs).data)
 
+    def norm(self):
+        return math.sqrt(sum([x**2 for x in self.data]))
+
+    def normalize(self):
+        return self * (1 / self.norm())
+
+    def _normalize(self):
+        norm = self.norm()
+        self.data = [x / norm for x in self.data]
+
     def __str__(self) -> str:
-        return f"{self.dim}-dimensional Vector at {hex(id(self))}: {self.data}"
+        return f"{self.dim}-dim Vector at {hex(id(self))}: {self.data}"
