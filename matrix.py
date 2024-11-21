@@ -261,6 +261,48 @@ class Matrix:
         else:
             return None
 
+    def is_nonzero(self):
+        for el in self.data:
+            if el != 0:
+                return True
+        return False
+
+    def rank(self):
+        # Gaussian elimination method
+        # read: https://cp-algorithms.com/linear_algebra/rank-matrix.html
+        if not self.is_nonzero():
+            return 0
+        if self._is_square():
+            if self.det() != 0:
+                return self.n_cols
+        rank = 0
+        selected_rows = [False] * self.n_rows
+        for col in range(self.n_cols):
+            for row in range(self.n_rows):
+                if not selected_rows[row] and Matrix._close_enough(
+                    self.get(row, col), 0.0
+                ):
+                    break
+
+            if row != col:
+                rank += 1
+                selected_rows[row] = True
+                for successive_right_col in range(col + 1, self.n_cols):
+                    self.set(
+                        row,
+                        successive_right_col,
+                        self.get(row, successive_right_col) / self.get(row, col),
+                    )
+                for r in range(self.n_rows):
+                    if r != row and Matrix._close_enough(self.get(r, col), 0.0):
+                        for c in range(col + 1, self.n_cols):
+                            self.set(
+                                r,
+                                c,
+                                self.get(r, c) - (self.get(row, c) * self.get(r, col)),
+                            )
+        return rank
+
     def __getitem__(self, key):
         return self._row(key)
 
