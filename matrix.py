@@ -227,6 +227,40 @@ class Matrix:
                 sign = -sign
             return cum_sum
 
+    def solve(self, constants):
+        if not isinstance(constants, Vector):
+            raise ValueError("Argument must be a vector")
+        if constants.dim != self.n_cols:
+            raise ValueError("Constants vector has incompatible dimensionality")
+        constants = Matrix(constants.dim, 1, constants.data)
+        self._join(constants)
+        # Gauss-Jordan algorithm
+        for row in range(self.n_rows):
+            for col in range(int(self.n_cols - 1)):
+                is_current_col_all_zero = True
+                for r in range(row, self.n_rows):
+                    if not Matrix._close_enough(self.get(r, col), 0.0):
+                        is_current_col_all_zero = False
+                        break
+                if is_current_col_all_zero:
+                    continue
+                else:
+                    max_row = self._find_row_with_max_element(col, row)
+                    if not max_row == row:
+                        self._swap_rows(max_row, row)
+                    self._mult_row(row, 1 / self.get(row, col))
+                    for upper_row in range(row):
+                        self._mult_add(row, upper_row, -self.get(upper_row, col))
+                    for lower_row in range(row + 1, self.n_rows):
+                        self._mult_add(row, lower_row, -self.get(lower_row, col))
+        for row in range(int(self.n_rows - 1)):
+            self._swap_rows(row, int(self.n_rows) - row - 1)
+        left, right = self._separate(int(self.n_cols - 1))
+        if left == Matrix(self.n_rows, self.n_cols - 1)._set2identity():
+            return Vector(right.data)
+        else:
+            return None
+
     def __getitem__(self, key):
         return self._row(key)
 
