@@ -314,6 +314,25 @@ class Matrix:
                             )
         return rank
 
+    def transpose(self):
+        transposed_matrix = Matrix(self.n_cols, self.n_rows)
+        for row in range(self.n_rows):
+            for col in range(self.n_cols):
+                transposed_matrix.set(col, row, self.get(row, col))
+        return transposed_matrix
+
+    def trace(self):
+        if not self._is_square():
+            raise ValueError("Trace is only defined for a square matrix")
+        return sum(
+            [
+                self.get(row, col)
+                for row in range(self.n_rows)
+                for col in range(self.n_cols)
+                if row == col
+            ]
+        )
+
     def __getitem__(self, key):
         return self._row(key)
 
