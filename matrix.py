@@ -4,6 +4,7 @@ import math
 from vector import Vector
 
 
+
 class Matrix:
     def __init__(self, n_rows: int = 1, n_cols: int = 1, data=[0.0]):
         self.n_rows = n_rows
@@ -233,7 +234,13 @@ class Matrix:
         if constants.dim != self.n_cols:
             raise ValueError("Constants vector has incompatible dimensionality")
         constants = Matrix(constants.dim, 1, constants.data)
+        rank_before_aug = self.rank()
         self._join(constants)
+        rank_after_aug = self.rank()
+        if rank_before_aug == rank_after_aug and rank_before_aug < self.n_rows:
+            raise ValueError("No unique solution exists for the system.")
+        elif rank_before_aug < rank_after_aug:
+            raise ValueError("No solution exists for the system.")
         # Gauss-Jordan algorithm
         for row in range(self.n_rows):
             for col in range(int(self.n_cols - 1)):
@@ -269,37 +276,42 @@ class Matrix:
 
     def rank(self):
         # Gaussian elimination method
-        # read: https://cp-algorithms.com/linear_algebra/rank-matrix.html
+        # read here: https://cp-algorithms.com/linear_algebra/rank-matrix.html
         if not self.is_nonzero():
             return 0
         if self._is_square():
             if self.det() != 0:
                 return self.n_cols
+        matrix = copy.deepcopy(self)
         rank = 0
-        selected_rows = [False] * self.n_rows
-        for col in range(self.n_cols):
-            for row in range(self.n_rows):
-                if not selected_rows[row] and Matrix._close_enough(
-                    self.get(row, col), 0.0
+        selected_rows = [False] * matrix.n_rows
+        for curr_col in range(matrix.n_cols):
+            curr_row = 0
+            while curr_row < matrix.n_rows:
+                if (
+                    not selected_rows[curr_row]
+                    and abs(matrix.get(curr_row, curr_col)) > 1e-9
                 ):
                     break
+                curr_row += 1
 
-            if row != col:
+            if curr_row != self.n_rows:
                 rank += 1
-                selected_rows[row] = True
-                for successive_right_col in range(col + 1, self.n_cols):
-                    self.set(
-                        row,
-                        successive_right_col,
-                        self.get(row, successive_right_col) / self.get(row, col),
+                selected_rows[curr_row] = True
+                for next_col in range(curr_col + 1, self.n_cols):
+                    matrix.set(
+                        curr_row,
+                        next_col,
+                        matrix.get(curr_row, next_col) / matrix.get(curr_row, curr_col),
                     )
-                for r in range(self.n_rows):
-                    if r != row and Matrix._close_enough(self.get(r, col), 0.0):
-                        for c in range(col + 1, self.n_cols):
-                            self.set(
+                for r in range(matrix.n_rows):
+                    if r != curr_row and abs(matrix.get(r, curr_col)) > 1e-9:
+                        for c in range(curr_col + 1, matrix.n_cols):
+                            matrix.set(
                                 r,
                                 c,
-                                self.get(r, c) - (self.get(row, c) * self.get(r, col)),
+                                matrix.get(r, c)
+                                - (matrix.get(curr_row, c) * matrix.get(r, curr_col)),
                             )
         return rank
 
