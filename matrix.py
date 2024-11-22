@@ -4,7 +4,6 @@ import math
 from vector import Vector
 
 
-
 class Matrix:
     def __init__(self, n_rows: int = 1, n_cols: int = 1, data=[0.0]):
         self.n_rows = n_rows
