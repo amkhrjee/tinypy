@@ -149,8 +149,30 @@ class Matrix:
         for i, e in enumerate(old_data):
             self.data[i] = e
 
-    def get(self, row_idx: int, col_idx: int):
-        return self.data[self._sub2ind(row_idx, col_idx)]
+    def get(self, row_idx, col_idx):
+        if isinstance(row_idx, range) and isinstance(col_idx, int):
+            column_vec_data = []
+            for row in row_idx:
+                column_vec_data.append(self.get(row, col_idx))
+            return Vector(column_vec_data)
+        elif isinstance(row_idx, int) and isinstance(col_idx, range):
+            row_vec_data = []
+            for col in col_idx:
+                row_vec_data.append(self.get(row_idx, col))
+            return Vector(row_vec_data)
+        elif isinstance(row_idx, range) and isinstance(col_idx, range):
+
+            def range_len(r: range):
+                return (r.stop - r.start - 1) // r.step + 1
+
+            block_data = []
+            for row in row_idx:
+                for col in col_idx:
+                    block_data.append(self.get(row, col))
+            return Matrix(range_len(row_idx), range_len(col_idx), block_data)
+
+        else:
+            return self.data[self._sub2ind(row_idx, col_idx)]
 
     def set(self, row_idx: int, col_idx: int, value) -> bool:
         self.data[self._sub2ind(row_idx, col_idx)] = value
