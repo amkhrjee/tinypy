@@ -387,6 +387,34 @@ class Matrix:
                     Q.set(row, col, third_matrix.get(row, col - j - 1))
         return H
 
+        # read here: https://www.cs.cornell.edu/~bindel/class/cs6210-f09/lec18.pdf
+
+    def qr_decomposition(self):
+        Q = Matrix(self.n_rows, self.n_rows)._set2identity()
+        R = copy.deepcopy(self)
+
+        for j in range(self.n_cols):
+            normx = R.get(range(j, self.n_rows), j).norm()
+            s = -math.copysign(1, R.get(j, j))
+            u1 = R.get(j, j) - s * normx
+            w = R.get(range(j, self.n_rows), j) * (1 / u1)
+            w[0] = 1
+            w_matrix = Matrix(w.dim, 1, w.data)
+            tau = -s * u1 / normx
+
+            R_block = R.get(range(j, R.n_rows), range(R.n_cols))
+            R_matrix = R_block - (w_matrix * tau) * (w_matrix.transpose() * R_block)
+            for row in range(j, R.n_rows):
+                for col in range(R.n_cols):
+                    R.set(row, col, R_matrix.get(row - j, col))
+
+            Q_block = Q.get(range(Q.n_rows), range(j, self.n_cols))
+            Q_matrix = Q_block - (Q_block * w_matrix) * (w_matrix.transpose() * tau)
+            for row in range(Q.n_rows):
+                for col in range(j, Q.n_cols):
+                    Q.set(row, col, Q_matrix.get(row, col - j))
+        return Q, R
+
     def conjugate(self):
         return Matrix(
             self.n_rows,
