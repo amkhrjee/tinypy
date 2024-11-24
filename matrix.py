@@ -387,6 +387,13 @@ class Matrix:
                     Q.set(row, col, third_matrix.get(row, col - j - 1))
         return H
 
+    def conjugate(self):
+        return Matrix(
+            self.n_rows,
+            self.n_cols,
+            [x.conjugate() if isinstance(x, complex) else x for x in self.data],
+        )
+
     def __getitem__(self, key):
         return self._row(key)
 
