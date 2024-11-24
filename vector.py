@@ -2,7 +2,26 @@ import math
 
 
 class Vector:
-    def __init__(self, data=[0.0]) -> None:
+    """
+    A class to represent a vector.
+
+    Attributes:
+    ----------
+    data : list
+        List to store vector elements.
+    dim : int
+        Dimension of the vector.
+    """
+
+    def __init__(self, data):
+        """
+        Constructs all the necessary attributes for the vector object.
+
+        Parameters:
+        ----------
+        data : list
+            List of initial values for the vector elements.
+        """
         self.data = data
         self.dim = len(data)
 
@@ -39,6 +58,24 @@ class Vector:
         return new_vec
 
     def dot(self, rhs):
+        """
+        Computes the dot product of the vector with another vector.
+
+        Parameters:
+        ----------
+        rhs : Vector
+            The vector to dot with.
+
+        Returns:
+        -------
+        float
+            The dot product of the two vectors.
+
+        Raises:
+        ------
+        ValueError
+            If rhs is not a Vector or if the dimensions do not match.
+        """
         if not isinstance(rhs, Vector):
             raise ValueError("Can only dot with a vector")
         if rhs.dim != self.dim:
@@ -48,9 +85,26 @@ class Vector:
         return sum((self * rhs).data)
 
     def norm(self):
+        """
+        Computes the Euclidean norm (magnitude) of the vector.
+
+        Returns:
+        -------
+        float
+            The Euclidean norm of the vector.
+        """
         return math.sqrt(sum([x**2 for x in self.data]))
 
     def normalize(self):
+        """
+        Normalize the vector.
+
+        This method scales the vector to have a norm (magnitude) of 1,
+        effectively converting it to a unit vector.
+
+        Returns:
+            Vector: A new vector that is the normalized version of the original vector.
+        """
         return self * (1 / self.norm())
 
     def _normalize(self):
