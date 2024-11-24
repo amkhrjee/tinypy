@@ -104,4 +104,8 @@ class Vector:
         self.data = [x / norm for x in self.data]
 
     def __str__(self) -> str:
-        return f"{self.dim}-dim Vector at {hex(id(self))}: {self.data}"
+        final = f"{self.dim}-dim Vector at {hex(id(self))}: <"
+        for data in self.data:
+            final += f"{data: .2f}  "
+        final += ">"
+        return final

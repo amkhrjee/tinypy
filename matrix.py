@@ -406,7 +406,6 @@ class Matrix:
         Raises:
             ValueError: If the matrix is not square and thus not invertible.
         Notes:
-            - This method modifies the original matrix.
             - The algorithm used is the Gauss-Jordan elimination as described in:
               https://www.statlect.com/matrix-algebra/Gauss-Jordan-elimination
             - The identity matrix is formed in a mirrored fashion during the process,
@@ -417,25 +416,26 @@ class Matrix:
         identity_matrix = Matrix(self.n_rows, self.n_cols)._set2identity()
         if self == identity_matrix:
             return self
-        self._join(identity_matrix)
-        for row in range(self.n_rows):
-            for col in range(int(self.n_cols / 2)):
+        temp = copy.deepcopy(self)
+        temp._join(identity_matrix)
+        for row in range(temp.n_rows):
+            for col in range(int(temp.n_cols / 2)):
                 is_current_col_all_zero = True
-                for r in range(row, self.n_rows):
-                    if not Matrix._close_enough(self.get(r, col), 0.0):
+                for r in range(row, temp.n_rows):
+                    if not Matrix._close_enough(temp.get(r, col), 0.0):
                         is_current_col_all_zero = False
                         break
                 if is_current_col_all_zero:
                     continue
                 else:
-                    max_row = self._find_row_with_max_element(col, row)
+                    max_row = temp._find_row_with_max_element(col, row)
                     if not max_row == row:
-                        self._swap_rows(max_row, row)
-                    self._mult_row(row, 1 / self.get(row, col))
+                        temp._swap_rows(max_row, row)
+                    temp._mult_row(row, 1 / temp.get(row, col))
                     for upper_row in range(row):
-                        self._mult_add(row, upper_row, -self.get(upper_row, col))
-                    for lower_row in range(row + 1, self.n_rows):
-                        self._mult_add(row, lower_row, -self.get(lower_row, col))
+                        temp._mult_add(row, upper_row, -temp.get(upper_row, col))
+                    for lower_row in range(row + 1, temp.n_rows):
+                        temp._mult_add(row, lower_row, -temp.get(lower_row, col))
 
         # This algorithm has the quirk that the identity matrix is formed
         # in a mirrored fashion like
@@ -444,9 +444,9 @@ class Matrix:
         # 1 0 0
         # this is a quick hack to fix that
 
-        for row in range(int(self.n_rows / 2)):
-            self._swap_rows(row, int(self.n_rows) - row - 1)
-        left, right = self._separate(int(self.n_cols / 2))
+        for row in range(int(temp.n_rows / 2)):
+            temp._swap_rows(row, int(temp.n_rows) - row - 1)
+        left, right = temp._separate(int(temp.n_cols / 2))
 
         if left == identity_matrix:
             return right
