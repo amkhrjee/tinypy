@@ -355,6 +355,34 @@ class Matrix:
             ]
         )
 
+    def _delete_col(self, col_idx: int):
+        new_matrix = Matrix(self.n_rows, self.n_cols - 1)
+        for row in range(self.n_rows):
+            passed_deleted_col = False
+            for col in range(self.n_cols):
+                if col != col_idx:
+                    if passed_deleted_col:
+                        new_matrix.set(row, col - 1, self.get(row, col))
+                    else:
+                        new_matrix.set(row, col, self.get(row, col))
+                else:
+                    passed_deleted_col = True
+        return new_matrix
+
+    def _delete_row(self, row_idx):
+        new_matrix = Matrix(self.n_rows - 1, self.n_cols)
+        passed_deleted_row = False
+        for row in range(self.n_rows):
+            if row != row_idx:
+                for col in range(self.n_cols):
+                    if passed_deleted_row:
+                        new_matrix.set(row - 1, col, self.get(row, col))
+                    else:
+                        new_matrix.set(row, col, self.get(row, col))
+            else:
+                passed_deleted_row = True
+        return new_matrix
+
     # read here: https://www.cs.cornell.edu/~bindel/class/cs6210-f16/lec/2016-10-21.pdf
     def _hessenberg(self):
         if not self._is_square():
@@ -387,8 +415,7 @@ class Matrix:
                     Q.set(row, col, third_matrix.get(row, col - j - 1))
         return H
 
-        # read here: https://www.cs.cornell.edu/~bindel/class/cs6210-f09/lec18.pdf
-
+    # read here: https://www.cs.cornell.edu/~bindel/class/cs6210-f09/lec18.pdf
     def qr_decomposition(self):
         Q = Matrix(self.n_rows, self.n_rows)._set2identity()
         R = copy.deepcopy(self)
@@ -414,6 +441,29 @@ class Matrix:
                 for col in range(j, Q.n_cols):
                     Q.set(row, col, Q_matrix.get(row, col - j))
         return Q, R
+
+    def eig(self, limit=100):
+        if not self._is_square() or self.det() == 0:
+            raise ValueError(
+                "Can only determine eigenvalues for square non-singular matrices"
+            )
+        n = self.n_rows
+        tolerance = 1e-9
+        hess = self._hessenberg()
+        m = n - 1
+        k = 0
+        eigenvals = Vector([0.0] * n)
+        while k < limit and m > 0:
+            if abs(hess.get(m, m - 1)) < tolerance:
+                eigenvals[m] = hess.get(m, m)
+                hess = hess._delete_col(m)
+                hess = hess._delete_row(m)
+                m -= 1
+            Q, R = hess.qr_decomposition()
+            hess = R * Q
+            k = k + 1
+        eigenvals[0] = hess.get(0, 0)
+        return eigenvals
 
     def conjugate(self):
         return Matrix(
@@ -509,7 +559,7 @@ class Matrix:
 
     def __str__(self) -> str:
         final = f"{self.n_rows}x{self.n_cols} Matrix at {hex(id(self))}"
-        final += "\n-------------------------------------\n"
+        final += "\n-----------------------------\n"
         for i, e in enumerate(self.data):
             if (i + 1) % self.n_cols == 0:
                 final += f"{e :.2f}\n"
