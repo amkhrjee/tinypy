@@ -477,7 +477,7 @@ class Matrix:
                     submatrix_col_idx += 1
         return submatrix
 
-    def det(self):
+    def det(self) -> float:
         """
         Calculate the determinant of the matrix.
 
@@ -556,7 +556,7 @@ class Matrix:
                         self._mult_add(row, upper_row, -self.get(upper_row, col))
                     for lower_row in range(row + 1, self.n_rows):
                         self._mult_add(row, lower_row, -self.get(lower_row, col))
-        for row in range(int(self.n_rows - 1)):
+        for row in range(int(self.n_rows / 2)):
             self._swap_rows(row, int(self.n_rows) - row - 1)
         left, right = self._separate(int(self.n_cols - 1))
         if left == Matrix(self.n_rows, self.n_cols - 1)._set2identity():
@@ -642,7 +642,7 @@ class Matrix:
                 transposed_matrix.set(col, row, self.get(row, col))
         return transposed_matrix
 
-    def trace(self):
+    def trace(self) -> float:
         """
         Calculate the trace of the matrix.
 
@@ -650,7 +650,7 @@ class Matrix:
         (from the top left to the bottom right) of a square matrix.
 
         Returns:
-            int or float: The trace of the matrix.
+            float: The trace of the matrix.
 
         Raises:
             ValueError: If the matrix is not square.
@@ -805,16 +805,17 @@ class Matrix:
         Compute the eigenvalues of a square non-singular matrix using the QR algorithm.
 
         Parameters:
-        limit (int): The maximum number of iterations for the QR algorithm (default is 100).
+            limit (int): The maximum number of iterations for the QR algorithm (default is 100).
 
         Returns:
-        Vector: A vector containing the eigenvalues of the matrix.
-
-        References:
-        (2008). Methods for Computing Eigenvalues. In: Numerical Linear Algebra. Texts in Applied Mathematics, vol 55. Springer, New York, NY. https://doi.org/10.1007/978-0-387-68918-0_10
+            Vector: A vector containing the eigenvalues of the matrix.
 
         Raises:
-        ValueError: If the matrix is not square or is singular.
+            ValueError: If the matrix is not square or is singular.
+
+        References:
+            (2008). Methods for Computing Eigenvalues. In: Numerical Linear Algebra. Texts in Applied Mathematics, vol 55. Springer, New York, NY. https://doi.org/10.1007/978-0-387-68918-0_10
+
 
         Notes:
         - The function first checks if the matrix is square and non-singular.
