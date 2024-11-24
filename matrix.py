@@ -355,6 +355,38 @@ class Matrix:
             ]
         )
 
+    # read here: https://www.cs.cornell.edu/~bindel/class/cs6210-f16/lec/2016-10-21.pdf
+    def _hessenberg(self):
+        if not self._is_square():
+            raise ValueError("Matrix must be square")
+        order = self.n_rows
+        H = copy.deepcopy(self)
+        Q = Matrix(order, order)._set2identity()
+        for j in range(order - 1):
+            u = H.get(range(j + 1, H.n_rows), j)
+            u[0] += math.copysign(u.norm(), u[0])
+            v = u.normalize()
+            v_matrix = Matrix(v.dim, 1, v.data)
+
+            H_block = H.get(range(j + 1, H.n_rows), range(H.n_cols))
+            first_matrix = H_block - (v_matrix * 2) * (v_matrix.transpose() * H_block)
+            for row in range(j + 1, H.n_rows):
+                for col in range(H.n_cols):
+                    H.set(row, col, first_matrix.get(row - j - 1, col))
+
+            H_block = H.get(range(H.n_rows), range(j + 1, H.n_cols))
+            second_matrix = H_block - (H_block * (v_matrix * 2)) * v_matrix.transpose()
+            for row in range(H.n_rows):
+                for col in range(j + 1, H.n_cols):
+                    H.set(row, col, second_matrix.get(row, col - j - 1))
+
+            Q_block = Q.get(range(Q.n_rows), range(j + 1, Q.n_cols))
+            third_matrix = Q_block - (Q_block * (v_matrix * 2)) * v_matrix.transpose()
+            for row in range(Q.n_rows):
+                for col in range(j + 1, Q.n_cols):
+                    Q.set(row, col, third_matrix.get(row, col - j - 1))
+        return H
+
     def __getitem__(self, key):
         return self._row(key)
 
