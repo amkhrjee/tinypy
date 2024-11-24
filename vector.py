@@ -57,24 +57,18 @@ class Vector:
             new_vec.data = [x * y for (x, y) in zip(self.data, rhs.data)]
         return new_vec
 
-    def dot(self, rhs):
+    def dot(self, rhs) -> float:
         """
         Computes the dot product of the vector with another vector.
 
         Parameters:
-        ----------
-        rhs : Vector
-            The vector to dot with.
+            Vector: The vector to dot with.
 
         Returns:
-        -------
-        float
-            The dot product of the two vectors.
+            float: The dot product of the two vectors.
 
         Raises:
-        ------
-        ValueError
-            If rhs is not a Vector or if the dimensions do not match.
+            ValueError: If rhs is not a Vector or if the dimensions do not match.
         """
         if not isinstance(rhs, Vector):
             raise ValueError("Can only dot with a vector")
@@ -89,9 +83,7 @@ class Vector:
         Computes the Euclidean norm (magnitude) of the vector.
 
         Returns:
-        -------
-        float
-            The Euclidean norm of the vector.
+            float: The Euclidean norm of the vector.
         """
         return math.sqrt(sum([x**2 for x in self.data]))
 
