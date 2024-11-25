@@ -19,7 +19,7 @@ The `Matrix` type has several useful methods like
 |  `conjugate()` | $\overline{A}$ |
 |  `transpose()` | $A^{T}$ |
 |  `solve(b)` | Finds $x$ for $Ax=b$ |
-|  `qe_decomposition` | Finds $Q$ and $R$ for $A = QR$ |
+|  `qr_decomposition` | Finds $Q$ and $R$ for $A = QR$ |
 |  `_hessenberg()` | Finds the upper Hessenberg form of $A$ |
 |  `eig()` | Finds the eigenvalues for $A$ |
 
