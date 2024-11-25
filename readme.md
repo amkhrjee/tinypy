@@ -35,7 +35,11 @@ The `Vector` type supports the following methods:
 
 ## Benchmarks for fun
 
+### Matrix multiplication
 
+Yeah, tinypy is slow.
+
+![](./output.png)
 
 ## Notes
 
