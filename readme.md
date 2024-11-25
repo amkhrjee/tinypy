@@ -2,7 +2,7 @@
 
 A tiny linear algebra library that I wrote to teach myself numerical linear algebra. It does not depend on any third party libraries.
 
-Check out [`examples.ipynb`](https://amkhrjee.github.io/tinypy/) to see what this library can do.
+Check out [`examples.ipynb`](./examples.ipynb) to see what this library can do.
 
 ## Features
 
