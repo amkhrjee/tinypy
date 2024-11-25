@@ -33,9 +33,13 @@ The `Vector` type supports the following methods:
 | `norm()`   |$\|\mathbf{a}\|$   |
 | `normalize()`   | $\dfrac{\mathbf{a}}{\|\mathbf{a}\|}$   |
 
+## Benchmarks for fun
+
+
+
 ## Notes
 
-While I have thoroughly tested the correctness of the library against library `numpy`, it is not meant to be used in any kind of production environment. Just use the standard alternatives.
+While I have thoroughly tested the correctness of the library against `numpy`, it is not meant to be used in any kind of production environment. Just use the standard alternatives.
 
 Not publishing on any package repository for practical reasons.
 
